@@ -12,9 +12,9 @@ A first ruleset for the Quickstart
     __testing = {
       "queries": [],
       "events": [
-        {"domain": "echo", "type": "hello"},
-        {"domain": "echo", "type": "monkey"},
-        {"domain": "echo", "type": "monkey", "args":["name"]}] 
+        {"domain": "echo", "name": "hello"},
+        {"domain": "echo", "name": "monkey"},
+        {"domain": "echo", "name": "monkey", "attrs":["name"]}] 
   }
 
   hello = function(obj) {
