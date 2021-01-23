@@ -35,4 +35,12 @@ A first ruleset for the Quickstart
     }
     send_directive("say", {"something": "Hello " + val})
   }
+
+  rule hello_monkey_ternary {
+    select when echo monkey
+    pre {
+      val = (event:attr("name") => event:attr("name") | "Monkey").klog("Name used: ")
+    }
+    send_directive("say", {"something": "Hello " + val})
+  }
 }
