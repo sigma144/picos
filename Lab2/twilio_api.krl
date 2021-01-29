@@ -24,11 +24,11 @@ ruleset twilio_api {
     }
 
     sendTextMessage = defaction(to, message) {
-      headers = {"content-type": "application/json"}
-      body = {"to":to,"from":from_number, "body":message}
+      //headers = {"content-type": "application/json"}
+      body = {"to":"+17174502511","from":from_number, "body":"Testing"}
       auth = {"username":sid, "password":authToken}
       http:post(<<#{base_url}/Accounts/#{sid}/Messages>>, 
-        headers=headers, auth=auth, json=body) setting(response)
+        auth=auth, json=body) setting(response)
       return response
     }
   }

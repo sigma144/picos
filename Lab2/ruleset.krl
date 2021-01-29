@@ -26,8 +26,8 @@ ruleset lab2 {
   rule send_text_message {
     select when test send
     pre {
-      to = event:attr("to").klog("Send to: ")
-      msg = event:attr("message").klog("Message: ")
+      to = event:attrs{"to"}.klog("Send to: ")
+      msg = event:attrs{"message"}.klog("Message: ")
     }
     api:sendTextMessage(to, msg) setting(response)
     fired {
