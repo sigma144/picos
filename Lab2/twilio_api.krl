@@ -27,7 +27,7 @@ ruleset twilio_api {
       //headers = {"content-type": "application/json"}
       body = {"To":"+17174502511","From":from_number, "Body":"Testing"}
       auth = {"username":sid, "password":authToken}
-      http:post(<<#{base_url}/Accounts/#{sid}/Messages>>, 
+      http:post(<<#{base_url}/Accounts/#{sid}/Messages.json>>, 
         auth=auth, qs=body) setting(response)
       return response
     }
