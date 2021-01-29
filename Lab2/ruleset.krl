@@ -11,7 +11,9 @@ ruleset lab2 {
    
   global {
     __testing = {
-      "queries": [],
+      "queries": [
+        {"name": "lastResponse"}
+      ],
       "events": [
         {"domain": "test", "name": "send", "attrs":["to", "message"]}
       ]
