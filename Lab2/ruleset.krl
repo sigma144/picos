@@ -5,7 +5,7 @@ ruleset lab2 {
       with
         sid = meta:rulesetConfig{"sid"}
         authToken = meta:rulesetConfig{"auth_token"}
-        from = meta:rulesetConfig{"phone_number"}
+        from_number = meta:rulesetConfig{"phone_number"}
     shares __testing, lastResponse
   }
    
