@@ -18,7 +18,7 @@ ruleset twilio_api {
     base_url = "https://api.twilio.com/2010-04-01"
 
     getTexts = function() {
-      auth = {"user":sid, "pass":authToken}
+      auth = {"username":sid, "password":authToken}
       response = http:get(<<#{base_url}/movie/popular>>, auth=auth)
       response{"content"}.decode()
     }
