@@ -24,7 +24,7 @@ ruleset twilio_api {
     }
 
     sendTextMessage = defaction(to, message) {
-      body = {"To":to,"From":from_number, "Body":message}
+      body = {"to":to,"from":from_number, "body":message}
       auth = {"username":sid, "password":authToken}
       http:post(<<#{base_url}/Accounts/#{sid}/Messages>>, 
         auth=auth, json=body) setting(response)
