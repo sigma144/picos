@@ -3,6 +3,10 @@ ruleset twilio_api {
     name "Twilio API Module"
     shares __testing
     provides getTexts, sendTextMessage
+    configure using
+      from = ""
+      sid = ""
+      authToken = ""
   }
    
   global {
@@ -19,7 +23,7 @@ ruleset twilio_api {
       response{"content"}.decode()
     }
 
-    sendTextMessage = defaction(from, to, message) {
+    sendTextMessage = defaction(to, message) {
       body = {"To":to,"From":from, "Body":message}
       auth = {"user":sid, "pass":authToken}
       http:post(<<#{base_url}/Accounts/${sid}/Messages>>, 

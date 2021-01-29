@@ -6,23 +6,15 @@ ruleset lab2 {
         sid = meta:rulesetConfig{"sid"}
         authToken = meta:rulesetConfig{"auth_token"}
         from = meta:rulesetConfig{"phone_number"}
-    shares __testing, getTexts, sendTextMessage, lastResponse
+    shares __testing, lastResponse
   }
    
   global {
     __testing = {
       "queries": [],
       "events": [
-        {"domain": "test", "name": "send", "attrs":["to", "message"]},
-        {"domain": "test", "name": "response"}
+        {"domain": "test", "name": "send", "attrs":["to", "message"]}
       ]
-    }
-    getTexts = function() {
-      api:getTexts()
-    }
-    sendTextMessage = function(from, to, msg) {
-      //api:sendTextMessage(from, to, msg)
-      "Okay"
     }
     lastResponse = function() {
       {}.put(ent:lastTimestamp,ent:lastResponse)
@@ -32,17 +24,13 @@ ruleset lab2 {
   rule send_text_message {
     select when test send
     pre {
-      to = event:attr("to")
-      msg = event:attr("message")
+      to = event:attrs{"to"}
+      msg = event:attrs{"message"}
     }
-    sendTextMessage(from, to, msg) setting(response)
+    api:sendTextMessage(to, msg) setting(response)
     fired {
       ent:lastResponse := response
       ent:lastTimestamp := time:now()
     }
-  }
-  rule get_status {
-    select when test response
-    lastResponse()
   }
 }
