@@ -3,9 +3,9 @@ ruleset lab2 {
     name "Lab 2"
     use module twilio_api alias api
       with
-        sid = meta:rulesetConfig["sid"]
-        authToken = meta:rulesetConfig["auth_token"]
-        from_number = meta:rulesetConfig["phone_number"]
+        sid = meta:rulesetConfig{"sid"}
+        authToken = meta:rulesetConfig{"auth_token"}
+        from_number = meta:rulesetConfig{"phone_number"}
     shares __testing, lastResponse
   }
    
