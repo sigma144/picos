@@ -16,7 +16,7 @@ ruleset lab2 {
       ],
       "events": [
         {"domain": "test", "name": "send", "attrs":["to", "message"]},
-        {"domain": "test", "name": "read", "attrs":["to", "from"]}
+        {"domain": "test", "name": "read", "attrs":["to", "from", "page_size"]}
       ]
     }
     lastResponse = function() {
@@ -42,7 +42,8 @@ ruleset lab2 {
     pre {
       to = event:attrs{"to"}.klog("Sent to: ")
       from_number = event:attrs{"from"}.klog("Sent from: ")
+      page_size = event:attr("page_size") || "20"
     }
-    send_directive("result", {"response": api:messages(to, from_number)})
+    send_directive("say", api:messages(to, from_number))
   }
 }

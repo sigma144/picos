@@ -17,8 +17,8 @@ ruleset twilio_api {
 
     base_url = "https://api.twilio.com/2010-04-01"
 
-    messages = function(to = null, from_number = null) {
-      params = {"To":to, "From":from_number}
+    messages = function(to = null, from_number = null, pagesize = null) {
+      params = {"To":to, "From":from_number, "PageSize":pagesize}
       auth = {"username":sid, "password":authToken}
       response = http:get(<<#{base_url}/Accounts/#{sid}/Messages.json>>, auth=auth)
       response{"content"}.decode()
