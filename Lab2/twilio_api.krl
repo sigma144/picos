@@ -2,7 +2,7 @@ ruleset twilio_api {
   meta {
     name "Twilio API Module"
     shares __testing
-    provides getTexts, sendTextMessage, messages
+    provides sendTextMessage, messages
     configure using
       from_number = ""
       sid = ""

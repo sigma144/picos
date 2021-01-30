@@ -15,7 +15,8 @@ ruleset lab2 {
         {"name": "lastResponse"}
       ],
       "events": [
-        {"domain": "test", "name": "send", "attrs":["to", "message"]}
+        {"domain": "test", "name": "send", "attrs":["to", "message"]},
+        {"domain": "test", "name": "read", "attrs":["to", "from"]}
       ]
     }
     lastResponse = function() {
