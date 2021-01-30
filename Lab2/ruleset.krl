@@ -43,10 +43,6 @@ ruleset lab2 {
       to = event:attrs{"to"}.klog("Sent to: ")
       from_number = event:attrs{"from"}.klog("Sent from: ")
     }
-    api:messages(to, from_number) setting(response)
-    fired {
-      ent:lastResponse := response
-      ent:lastTimestamp := time:now()
-    }
+    send_directive("result", {"response": api:messages(to, from_number)})
   }
 }
