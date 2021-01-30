@@ -43,7 +43,8 @@ ruleset lab2 {
       to = event:attrs{"to"}.klog("Sent to: ")
       from_number = event:attrs{"from"}.klog("Sent from: ")
       page_size = event:attrs{"page_size"} || "20"
+      page_num = event:attrs{"page_num"} || "1"
     }
-    send_directive("say", api:messages(to, from_number))
+    send_directive("say", api:messages(to, from_number, page_size, page_num))
   }
 }

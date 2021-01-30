@@ -17,10 +17,12 @@ ruleset twilio_api {
 
     base_url = "https://api.twilio.com/2010-04-01"
 
-    messages = function(to = null, from_number = null, pagesize = null) {
-      params = {"To":to, "From":from_number, "page_size":pagesize}
+    messages = function(to = null, from_number = null, page_size = null, page_num = null) {
+      params = {"To":to, "From":from_number}
+      qs = {"PageSize":page_size, "Page":page_num}
       auth = {"username":sid, "password":authToken}
-      response = http:get(<<#{base_url}/Accounts/#{sid}/Messages.json>>, auth=auth)
+      response = http:get(<<#{base_url}/Accounts/#{sid}/Messages.json>>,
+        params=params, qs=qs, auth=auth)
       response{"content"}.decode()
     }
 
