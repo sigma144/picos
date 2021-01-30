@@ -35,4 +35,17 @@ ruleset lab2 {
       ent:lastTimestamp := time:now()
     }
   }
+
+  rule get_messages {
+    select when test read
+    pre {
+      to = event:attrs{"to"}.klog("Sent to: ")
+      from_number = event:attrs{"from"}.klog("Sent from: ")
+    }
+    api:messages(to, from_number) setting(response)
+    fired {
+      ent:lastResponse := response
+      ent:lastTimestamp := time:now()
+    }
+  }
 }

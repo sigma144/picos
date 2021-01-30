@@ -2,7 +2,7 @@ ruleset twilio_api {
   meta {
     name "Twilio API Module"
     shares __testing
-    provides getTexts, sendTextMessage
+    provides getTexts, sendTextMessage, messages
     configure using
       from_number = ""
       sid = ""
@@ -17,17 +17,18 @@ ruleset twilio_api {
 
     base_url = "https://api.twilio.com/2010-04-01"
 
-    getTexts = function() {
+    messages = function(to = null, from_number = null) {
+      params = {"To":to, "From":from_number}
       auth = {"username":sid, "password":authToken}
-      response = http:get(<<#{base_url}/movie/popular>>, auth=auth)
+      response = http:get(<<#{base_url}/Accounts/#{sid}/Messages.json>>, auth=auth)
       response{"content"}.decode()
     }
 
     sendTextMessage = defaction(to, message) {
-      body = {"To":to, "From":from_number, "Body":message}
+      params = {"To":to, "From":from_number, "Body":message}
       auth = {"username":sid, "password":authToken}
       http:post(<<#{base_url}/Accounts/#{sid}/Messages.json>>, 
-        auth=auth, form=body) setting(response)
+        auth=auth, form=params) setting(response)
       return response
     }
   }
