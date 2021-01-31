@@ -19,7 +19,7 @@ ruleset twilio_api {
 
     messages = function(to = null, from_number = null, page_size = null, page_num = null) {
       params = {"To":to, "From":from_number}
-      qs = {"PageSize":page_size, "Page":page_num}
+      qs = {"PageSize":page_size}
       auth = {"username":sid, "password":authToken}
       response = http:get(<<#{base_url}/Accounts/#{sid}/Messages.json>>,
         params=params, qs=qs, auth=auth)
