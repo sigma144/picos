@@ -16,6 +16,7 @@ ruleset lab2 {
       ],
       "events": [
         {"domain": "test", "name": "send", "attrs":["to", "message"]},
+        {"domain": "test", "name": "read", "attrs":["sid"]},
         {"domain": "test", "name": "read", "attrs":["to", "from", "page_size"]}
       ]
     }
@@ -42,9 +43,9 @@ ruleset lab2 {
     pre {
       to = event:attrs{"to"}.klog("Sent to: ")
       from_number = event:attrs{"from"}.klog("Sent from: ")
-      page_size = event:attrs{"page_size"} || "20"
-      page_num = event:attrs{"page_num"} || "1"
+      msg_sid = event:attrs{"sid"}
+      page_size = event:attrs{"page_size"} || "50"
     }
-    send_directive("say", api:messages(to, from_number, page_size, page_num))
+    send_directive("say", api:messages(msg_sid, to, from_number, page_size))
   }
 }
