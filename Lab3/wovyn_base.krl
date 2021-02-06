@@ -56,7 +56,7 @@ ruleset wovyn_base {
     send_directive("Exceeded threshold", {"temperature": temperature,
       "threshold": temperature_threshold})
     fired {
-      raise test event send attributes {
+      raise test event "send" attributes {
         "to": alert_number,
         "message": <<"Hi Temp Alert at #{time}: Temperature #{temperature}F exceeds threshold of #{temperature_threshold}F>>
       }
