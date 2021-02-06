@@ -17,7 +17,7 @@ ruleset wovyn_base {
       ]
     }
 
-    temperature_threshold = 100 //Fahrenheit
+    temperature_threshold = 75 //Fahrenheit
   }
 
   rule process_heartbeat {
@@ -37,7 +37,8 @@ ruleset wovyn_base {
   rule find_high_temps {
     select when wovyn new_temperature_reading
     pre {
-      temperature = event:attrs{"temperature"}{"temperatureF"}.klog("Temperature in F")
+      temperature = event:attrs{"temperature"}.klog("Temperature in F")
+      th = threshold.klog("Threshold")
       time = event:attrs{"timestamp"}
     }
     send_directive("Checking threshold violation", {
