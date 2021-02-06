@@ -3,8 +3,6 @@ ruleset wovyn_base {
     name "Wovyn Base"
     use module twilio_api alias api
     shares __testing
-    configure using
-      alert_number = ""
   }
    
   global {
@@ -18,6 +16,7 @@ ruleset wovyn_base {
     }
 
     temperature_threshold = 78 //Fahrenheit
+    alert_number = "+17174502511"
   }
 
   rule process_heartbeat {
