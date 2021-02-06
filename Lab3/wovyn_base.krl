@@ -58,7 +58,7 @@ ruleset wovyn_base {
     fired {
       raise test event send attributes {
         "to": alert_number,
-        "message": <<"Hi Temp Alert at #{time}: Temperature #{temperature}F exceeds threshold of #{threshold}F>>
+        "message": <<"Hi Temp Alert at #{time}: Temperature #{temperature}F exceeds threshold of #{temperature_threshold}F>>
       }
     }
   }
