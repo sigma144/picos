@@ -37,12 +37,18 @@ ruleset wovyn_base {
   rule find_high_temps {
     select when wovyn new_temperature_reading
     pre {
-      temperature = event:attrs{"temperatureF"}.klog("Temperature in F")
-
+      temperature = event:attrs{"temperature"}.klog("Temperature in F")
+      time = event:attrs{"timestamp"}
     }
-    send_directive("Temperature in F", temperature)
+    send_directive("Checking threshold violation", {
+      "temperature": temperature,
+      "threshold": temperature_threshold
+    })
     fired {
-      raise wovyn event "threshold_violation" attributes {}
+      raise wovyn event "threshold_violation" attributes {
+        "temperature":temperature,
+        "timestamp":time
+      }
       if (temperature > temperature_threshold);
     }
   }
@@ -53,8 +59,9 @@ ruleset wovyn_base {
       temperature = math:round(event:attrs{"temperature"}).klog("Exceeded threshold")
       time = event:attrs{"timestamp"}
     }
-    send_directive("Exceeded threshold", {"temperature": temperature,
-      "threshold": temperature_threshold})
+    send_directive("Threshold exceeded! Sending notification", {
+      "phone-no":alert_number
+    })
     fired {
       raise test event "send" attributes {
         "to": alert_number,
