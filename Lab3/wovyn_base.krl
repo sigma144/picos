@@ -43,7 +43,8 @@ ruleset wovyn_base {
     }
     send_directive("Checking threshold violation", {
       "temperature": temperature,
-      "threshold": temperature_threshold
+      "threshold": temperature_threshold,
+      "timestamp":time
     })
     fired {
       raise wovyn event "threshold_violation" attributes {
@@ -61,7 +62,8 @@ ruleset wovyn_base {
       time = event:attrs{"timestamp"}
     }
     send_directive("Threshold exceeded! Sending notification", {
-      "phone-no":alert_number
+      "phone-no":alert_number,
+      "timestamp":time
     })
     fired {
       raise test event "send" attributes {
