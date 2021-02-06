@@ -17,7 +17,7 @@ ruleset wovyn_base {
       ]
     }
 
-    temperature_threshold = 75 //Fahrenheit
+    temperature_threshold = 78 //Fahrenheit
   }
 
   rule process_heartbeat {
