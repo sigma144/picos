@@ -58,7 +58,7 @@ ruleset wovyn_base {
   rule threshold_notification {
     select when wovyn threshold_violation
     pre {
-      temperature = math:round(event:attrs{"temperature"}).klog("Exceeded threshold")
+      temperature = event:attrs{"temperature"}.klog("Exceeded threshold")
       time = event:attrs{"timestamp"}
     }
     send_directive("Threshold exceeded! Sending notification", {
