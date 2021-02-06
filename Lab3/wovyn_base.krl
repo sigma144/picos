@@ -23,9 +23,9 @@ ruleset wovyn_base {
   rule process_heartbeat {
     select when wovyn heartbeat genericThing re#(.+)#
     pre {
-      temp = event:attrs{"genericThing"}{"data"}{"temperature"}.klog("Reading temperature object:")
+      temp = event:attrs{"genericThing"}{"data"}{"temperature"}.klog("Reading temperature object")
     }
-    send_directive("say", {"something:": "Heartbeat!"})
+    send_directive("Temperature Reading", temp)
     fired {
       raise wovyn event "new_temperature_reading" attributes {
         "temperature":temp,
@@ -37,8 +37,10 @@ ruleset wovyn_base {
   rule find_high_temps {
     select when wovyn new_temperature_reading
     pre {
-      temperature = event:attrs{"temperatureF"}.klog("Temperature in F:")
+      temperature = event:attrs{"temperatureF"}.klog("Temperature in F")
+
     }
+    send_directive("Temperature in F", temperature)
     fired {
       raise wovyn event "threshold_violation" attributes {}
       if (temperature > temperature_threshold);
@@ -48,14 +50,16 @@ ruleset wovyn_base {
   rule threshold_notification {
     select when wovyn temperature_violation
     pre {
-      temperature = math:round(event:attrs{"temperature"}).klog("Exceeded threshold: ")
+      temperature = math:round(event:attrs{"temperature"}).klog("Exceeded threshold")
       time = event:attrs{"timestamp"}
     }
+    send_directive("Exceeded threshold", {"temperature": temperature,
+      "threshold": temperature_threshold})
     fired {
-      //raise test event send attributes {
-      //  "to": alert_number,
-      //  "message": <<"Hi Temp Alert at #{time}: Temperature #{temperature}F exceeds threshold of #{threshold}F>>
-      //}
+      raise test event send attributes {
+        "to": alert_number,
+        "message": <<"Hi Temp Alert at #{time}: Temperature #{temperature}F exceeds threshold of #{threshold}F>>
+      }
     }
   }
 }
