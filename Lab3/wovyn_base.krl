@@ -23,12 +23,12 @@ ruleset wovyn_base {
   rule process_heartbeat {
     select when wovyn heartbeat genericThing re#(.+)#
     pre {
-      temp = event:attrs{"genericThing"}{"data"}{"temperature"}.klog("Reading temperature object")
+      temperature = event:attrs{"genericThing"}{"data"}{"temperature"}.klog("Reading temperature object")
     }
-    send_directive("Temperature Reading", temp)
+    send_directive("Temperature Reading", temperature)
     fired {
       raise wovyn event "new_temperature_reading" attributes {
-        "temperature":temp,
+        "temperature":temperature,
         "timestamp":time:now()
       }
     }
@@ -37,7 +37,7 @@ ruleset wovyn_base {
   rule find_high_temps {
     select when wovyn new_temperature_reading
     pre {
-      temperature = event:attrs{"temperature"}.klog("Temperature in F")
+      temperature = event:attrs{"temperature"}{"temperatureF"}.klog("Temperature in F")
       time = event:attrs{"timestamp"}
     }
     send_directive("Checking threshold violation", {
