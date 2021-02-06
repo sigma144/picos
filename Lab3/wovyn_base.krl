@@ -38,7 +38,7 @@ ruleset wovyn_base {
     select when wovyn new_temperature_reading
     pre {
       temperature = event:attrs{"temperature"}.klog("Temperature in F")
-      th = threshold.klog("Threshold")
+      th = temperature_threshold.klog("Threshold")
       time = event:attrs{"timestamp"}
     }
     send_directive("Checking threshold violation", {
