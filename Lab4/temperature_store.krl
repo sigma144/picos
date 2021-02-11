@@ -1,8 +1,8 @@
 ruleset temperature_store {
     meta {
         name "Temperature Store"
-        shares __testing, threshold_violations, inrange_temperatures
-        provides threshold_violations, inrange_temperatures
+        shares __testing, temperatures, threshold_violations, inrange_temperatures
+        provides temperatures, threshold_violations, inrange_temperatures
     }
     global {
         __testing = { "queries": [
