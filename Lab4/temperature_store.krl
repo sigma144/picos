@@ -5,7 +5,13 @@ ruleset temperature_store {
         provides temperatures, threshold_violations, inrange_temperatures
     }
     global {
-        __testing = { "queries": [], "events": [] }
+        __testing = { "queries": [
+            {"name": "temperature"},
+            {"name": "threshold_violations"},
+            {"name": "inrange_temperatures"}
+        ], "events": [
+            {"domain": "sensor", "name": "reading_reset"},
+        ] }
         temperatures = function(obj) { ent:temps }
         threshold_violations = function(obj) { ent:violations }
         inrange_temperatures = function(obj) {
