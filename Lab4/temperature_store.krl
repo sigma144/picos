@@ -6,7 +6,7 @@ ruleset temperature_store {
     }
     global {
         __testing = { "queries": [
-            {"name": "temperature"},
+            {"name": "temperatures"},
             {"name": "threshold_violations"},
             {"name": "inrange_temperatures"}
         ], "events": [
