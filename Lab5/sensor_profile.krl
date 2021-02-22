@@ -5,19 +5,23 @@ ruleset sensor_profile {
         provides profile_info
     }
     global {
-        __testing = { "queries": [
-            {"name": "profile_info"}
-        ], "events": [
-            {"domain": "sensor", "name": "profile_updated",
-            "attrs":["name", "location", "alert_number", "threshold"]},
-        ] }
+        __testing = {
+            "queries": [
+                {"name": "profile_info"}
+            ],
+            "events": [
+                {"domain": "sensor", "name": "profile_updated",
+                "attrs":["name", "location", "alert_number", "threshold"]},
+            ]
+        }
         profile_info = function(obj) {
-            {
+            ent:profile_name
+            /*{
                 "name":ent:profile_name.defaultsTo(""),
                 "location":ent:profile_location.defaultsTo(""),
                 "alert_number":ent:profile_alert_number(""),
                 "threshold":ent:profile_threshold.defaultsTo(80)
-            }
+            }*/
         }
     }
 
