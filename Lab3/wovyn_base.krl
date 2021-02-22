@@ -16,7 +16,6 @@ ruleset wovyn_base {
     }
 
     threshold_default = 78 //Fahrenheit
-    alert_number_default = "+17174502511"
   }
 
   rule process_heartbeat {
@@ -60,7 +59,7 @@ ruleset wovyn_base {
       temperature = event:attrs{"temperature"}.klog("Exceeded threshold")
       threshold = ent:profile_threshold.defaultsTo(threshold_default)
       time = event:attrs{"timestamp"}
-      alert_number = ent:profile_alert_number.defaultsTo(alert_number_default)
+      alert_number = ent:profile_alert_number.defaultsTo("")
     }
     send_directive("Threshold exceeded! Sending notification", {
       "phone-no":alert_number,

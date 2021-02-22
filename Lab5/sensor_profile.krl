@@ -15,13 +15,12 @@ ruleset sensor_profile {
             ]
         }
         profile_info = function(obj) {
-            ent:profile_name
-            /*{
+            {
                 "name":ent:profile_name.defaultsTo(""),
                 "location":ent:profile_location.defaultsTo(""),
-                "alert_number":ent:profile_alert_number(""),
+                "alert_number":ent:profile_alert_number.defaultsTo(""),
                 "threshold":ent:profile_threshold.defaultsTo(80)
-            }*/
+            }
         }
     }
 
