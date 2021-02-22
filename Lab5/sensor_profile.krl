@@ -6,11 +6,9 @@ ruleset sensor_profile {
     }
     global {
         __testing = { "queries": [
-            {"name": "temperatures"},
-            {"name": "threshold_violations"},
-            {"name": "inrange_temperatures"}
+            {"name": "profile_info"}
         ], "events": [
-            {"domain": "sensor", "name": "reading_reset"},
+            {"domain": "sensor", "name": "profile_updated", "args":["name", "location", "alert_number", "threshold"]},
         ] }
         profile_info = function(obj) {
             {
