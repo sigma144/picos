@@ -58,6 +58,7 @@ ruleset wovyn_base {
     select when wovyn threshold_violation
     pre {
       temperature = event:attrs{"temperature"}.klog("Exceeded threshold")
+      threshold = ent:profile_threshold.defaultsTo(threshold_default)
       time = event:attrs{"timestamp"}
       alert_number = ent:profile_alert_number.defaultsTo(alert_number_default)
     }
@@ -68,7 +69,7 @@ ruleset wovyn_base {
     fired {
       raise test event "send" attributes {
         "to": alert_number,
-        "message": <<"Hi Temp Alert at #{time}: Temperature #{temperature}F exceeds threshold of #{temperature_threshold}F>>
+        "message": <<"Hi Temp Alert at #{time}: Temperature #{temperature}F exceeds threshold of #{threshold}F>>
       }
       if (alert_number);
     }
