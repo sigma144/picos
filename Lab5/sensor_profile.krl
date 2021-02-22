@@ -30,10 +30,10 @@ ruleset sensor_profile {
             alert_number = event:attrs{"alert_number"}
           }
           send_directive("Update Profile", {
-            "name":ent:profile_name,
-            "location":ent:profile_location,
-            "alert_number":ent:profile_alert_number,
-            "threshold":ent:profile_threshold
+            "name":name,
+            "location":location,
+            "alert_number":alert_number,
+            "threshold":threshold
           })
           always {
             ent:profile_name := name
