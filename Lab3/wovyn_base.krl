@@ -59,7 +59,7 @@ ruleset wovyn_base {
     pre {
       temperature = event:attrs{"temperature"}.klog("Exceeded threshold")
       time = event:attrs{"timestamp"}
-      alert_numnber = ent:profile_alert_number.defaultsTo(alert_number_default)
+      alert_number = ent:profile_alert_number.defaultsTo(alert_number_default)
     }
     send_directive("Threshold exceeded! Sending notification", {
       "phone-no":alert_number,
