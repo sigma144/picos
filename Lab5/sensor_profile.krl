@@ -8,7 +8,8 @@ ruleset sensor_profile {
         __testing = { "queries": [
             {"name": "profile_info"}
         ], "events": [
-            {"domain": "sensor", "name": "profile_updated", "args":["name", "location", "alert_number", "threshold"]},
+            {"domain": "sensor", "name": "profile_updated",
+            "attrs":["name", "location", "alert_number", "threshold"]},
         ] }
         profile_info = function(obj) {
             {
