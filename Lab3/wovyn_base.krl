@@ -36,7 +36,7 @@ ruleset wovyn_base {
     select when wovyn new_temperature_reading
     pre {
       temperature = event:attrs{"temperature"}{"temperatureF"}.klog("Temperature in F")
-      threshold = profile:profile_info{"threshold"}.defaultsTo(threshold_default)
+      threshold = profile:profile_info(){"threshold"}.defaultsTo(threshold_default)
       time = event:attrs{"timestamp"}
     }
     send_directive("Checking threshold violation", {
@@ -57,9 +57,9 @@ ruleset wovyn_base {
     select when wovyn threshold_violation
     pre {
       temperature = event:attrs{"temperature"}.klog("Exceeded threshold")
-      threshold = profile:profile_info{"threshold"}.defaultsTo(threshold_default)
+      threshold = profile:profile_info(){"threshold"}.defaultsTo(threshold_default)
       time = event:attrs{"timestamp"}
-      alert_number = profile:profile_info{"alert_number"}.defaultsTo("")
+      alert_number = profile:profile_info(){"alert_number"}.defaultsTo("")
     }
     send_directive("Threshold exceeded! Sending notification", {
       "phone-no":alert_number,
