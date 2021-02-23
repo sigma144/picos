@@ -12,6 +12,7 @@ ruleset sensor_profile {
             "events": [
                 {"domain": "sensor", "name": "profile_updated",
                 "attrs":["name", "location", "alert_number", "threshold"]},
+                {"domain": "sensor", "name": "profile_updated"}
             ]
         }
         profile_info = function(obj) {
