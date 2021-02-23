@@ -1,9 +1,7 @@
-angular.module('timing', [])
-.controller('MainCtrl', [
+angular.module('profileModule', [])
+.controller('ProfileCtrl', [
   '$scope','$http',
   function($scope,$http){
-    $scope.temps = [];
-    $scope.violations = [];
     $scope.profile = {
       "name": "",
       "location":"",
@@ -17,7 +15,6 @@ angular.module('timing', [])
     $scope.getProfile = function(number) {
       return $http.get(profileQURL).success(function(data){
         angular.copy(data, $scope.profile);
-        console.log($scope.profile);
       });
     };
 
@@ -29,20 +26,6 @@ angular.module('timing', [])
       + "&alert_number=" + $scope.profile["alert_number"] + "&threshold=" + $scope.profile["threshold"];
       return $http.post(URL).success(function(data){
         $scope.getProfile();
-      });
-    };
-
-    var tempsQURL = $scope.baseURL+'sky/cloud/'+$scope.eci+'/temperature_store/temperatures';
-    $scope.getTemps = function() {
-      return $http.get(tempsQURL).success(function(data){
-        angular.copy(data, $scope.temps);
-      });
-    };
-
-    var violationsQURL = $scope.baseURL+'sky/cloud/'+$scope.eci+'/temperature_store/threshold_violations';
-    $scope.getViolations = function() {
-      return $http.get(violationsQURL).success(function(data){
-        angular.copy(data, $scope.violations);
       });
     };
   }

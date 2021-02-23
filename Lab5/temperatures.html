@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <title>Temperature Readings</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+  <script src="temperatures.js"></script>
+  <style type="text/css">
+    span.finished { cursor: pointer; color: #0000ff; text-decoration: underline; }
+    div.eci input { visibility: hidden; }
+    div.eci:hover input { visibility: visible; }
+  </style>
+</head>
+<body ng-app="tempModule" ng-controller="TempCtrl"
+  style="text-align: center;">
+    <div class="page-header"> 
+        <h1>Temperature Readings</h1>
+    </div>
+    <h3>Current Temperature:</h3>
+    <h1>{{currentTemp}} &#176F</h1>
+    <h3>Recent Temps</h3>
+    <div ng-repeat="temp in temps | limitTo: 10">
+        <h4>{{temp.time.split("T")[0]}}, {{temp.time.split("T")[1].split(".")[0]}} - {{temp.temp}} &#176F</h4>
+    </div>
+    <h3>Temperature Violations</h3>
+    <div ng-repeat="temp in violations | limitTo: 10">
+        <h4>{{temp.time.split("T")[0]}}, {{temp.time.split("T")[1].split(".")[0]}} - {{temp.temp}} &#176F</h4>
+    </div>
+</body>
+<footer style="text-align: center;">
+    <a href="page.html">Edit Sensor Profile</a>
+</footer>
+</html>
