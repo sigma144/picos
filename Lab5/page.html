@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <title>Edit Sensor Profile</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+  <script src="page.js"></script>
+  <style type="text/css">
+    span.finished { cursor: pointer; color: blue; text-decoration: underline; }
+    div.eci input { visibility: hidden; }
+    div.eci:hover input { visibility: visible; }
+  </style>
+</head>
+<body ng-app="profileModule" ng-controller="ProfileCtrl">
+<div class="row">
+<div class="col-md-8 col-md-offset-2">
+<div class="page-header"> 
+  <h1>Edit Sensor Profile</h1>
+</div>
+  <form ng-submit="updateProfile()" style = "margin-top:30px;">
+    <input type="text" ng-model="profile.name" placeholder="Name"></input>
+    <input type="text" ng-model="profile.location" placeholder="Location"></input>
+    <input type="text" ng-model="profile.alert_number" placeholder="Alert Number"></input>
+    <input type="text" ng-model="profile.threshold" placeholder="Threshold"></input>
+    <button type="submit">Update Profile</button>
+  </form>
+</div>
+</div>
+</body>
+<footer style="text-align: center;">
+  <a href="temperatures.html">Back to Temperature Readings</a>
+</footer>
+</html>

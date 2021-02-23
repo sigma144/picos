@@ -1,7 +1,7 @@
 ruleset wovyn_base {
   meta {
     name "Wovyn Base"
-    use module twilio_api alias api
+    use module sensor_profile alias profile
     shares __testing
   }
    
@@ -14,9 +14,6 @@ ruleset wovyn_base {
         
       ]
     }
-
-    temperature_threshold = 78 //Fahrenheit
-    alert_number = "+17174502511"
   }
 
   rule process_heartbeat {
@@ -37,12 +34,12 @@ ruleset wovyn_base {
     select when wovyn new_temperature_reading
     pre {
       temperature = event:attrs{"temperature"}{"temperatureF"}.klog("Temperature in F")
-      th = temperature_threshold.klog("Threshold")
+      threshold = profile:profile_info(){"threshold"}
       time = event:attrs{"timestamp"}
     }
     send_directive("Checking threshold violation", {
       "temperature": temperature,
-      "threshold": temperature_threshold,
+      "threshold": threshold,
       "timestamp":time
     })
     fired {
@@ -50,7 +47,7 @@ ruleset wovyn_base {
         "temperature":temperature,
         "timestamp":time
       }
-      if (temperature > temperature_threshold);
+      if (temperature > threshold);
     }
   }
 
@@ -58,7 +55,9 @@ ruleset wovyn_base {
     select when wovyn threshold_violation
     pre {
       temperature = event:attrs{"temperature"}.klog("Exceeded threshold")
+      threshold = profile:profile_info(){"threshold"}
       time = event:attrs{"timestamp"}
+      alert_number = profile:profile_info(){"alert_number"}
     }
     send_directive("Threshold exceeded! Sending notification", {
       "phone-no":alert_number,
@@ -67,8 +66,9 @@ ruleset wovyn_base {
     fired {
       raise test event "send" attributes {
         "to": alert_number,
-        "message": <<"Hi Temp Alert at #{time}: Temperature #{temperature}F exceeds threshold of #{temperature_threshold}F>>
+        "message": <<"Hi Temp Alert at #{time}: Temperature #{temperature}F exceeds threshold of #{threshold}F>>
       }
+      if (alert_number);
     }
   }
 }
