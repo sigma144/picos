@@ -28,7 +28,7 @@ ruleset manage_sensors {
         installRuleset = defaction(eci, rulesetURI) {
             event:send( {
                 "eci": eci,
-                "eid": "install-ruleset-"+rid,
+                "eid": "install-ruleset-"+rulesetURI,
                 "domain": "wrangler", "type": "install_ruleset_request",
                 "attrs": {
                     "url": rulesetURI
