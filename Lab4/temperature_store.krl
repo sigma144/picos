@@ -3,6 +3,7 @@ ruleset temperature_store {
         name "Temperature Store"
         shares __testing, temperatures, threshold_violations, inrange_temperatures
         provides temperatures, threshold_violations, inrange_temperatures
+        use module io.picolabs.wrangler alias wrangler
     }
     global {
         __testing = { "queries": [
