@@ -21,14 +21,14 @@ ruleset manage_sensors {
             ent:sensors
         }
         temps = function() {
-            temp_map = ent:sensors.map(function(name,eci) {
+            temp_map = ent:sensors.map(function(eci,name) {
                 wrangler:picoQuery(eci,"temperature_store","temperatures",{})
             })
             temp_array = temp_map.values().reduce(function(a,b){a + b})
             temp_array
         }
         installRuleset = defaction(eci, rulesetURI) {
-            event:send( {
+            event:send({
                 "eci": eci,
                 "eid": "install-ruleset-"+rulesetURI,
                 "domain": "wrangler", "type": "install_ruleset_request",
