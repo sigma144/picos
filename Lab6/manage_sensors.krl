@@ -36,7 +36,7 @@ ruleset manage_sensors {
                 }
             })
         }
-        threshold_default = 80
+        threshold_default = 81
     }
 
     
