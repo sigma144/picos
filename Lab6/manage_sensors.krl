@@ -8,7 +8,7 @@ ruleset manage_sensors {
     global {
         __testing = {
             "queries": [
-
+                {"name": "temps"}
             ],
             "events": [
                 {"domain": "sensor", "name": "new_sensor", "attrs":["name", "alert_number"]},
