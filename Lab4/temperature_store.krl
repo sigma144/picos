@@ -50,4 +50,13 @@ ruleset temperature_store {
             ent:violations := {}
         }
     }
+
+    rule intialization {
+        select when wrangler ruleset_added where event:attrs{"rids"} >< ctx:rid
+        if ent:temps.isnull() then noop()
+        fired {
+            ent:temps := {}
+            ent:violations := {}
+        }
+    }
 }
