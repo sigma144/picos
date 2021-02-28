@@ -71,4 +71,14 @@ ruleset wovyn_base {
       if (alert_number);
     }
   }
+
+  rule create_channel {
+    select when wrangler ruleset_installed where event:attr("rids") >< meta:rid
+    pre {
+        tags = [meta:rid]
+        eventPolicy = { "allow":"*:*" }
+        queryPolicy = { "allow":"*:*" }
+    }
+    wrangler:createChannel(["testing"],{ "allow":"*:*" },{ "allow":"*:*" })
+  }
 }
