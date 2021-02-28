@@ -9,10 +9,11 @@ ruleset manage_sensors {
 
             ],
             "events": [
+                {"domain": "sensor", "name": "new_sensor", "attrs":["name"]},
 
             ]
         }
-        eci = ""
+        github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
         sensors = function() {
             ent:sensors
         }
@@ -23,7 +24,7 @@ ruleset manage_sensors {
             temp_array = temp_map.values().reduce(function(a,b){a + b})
             temp_array
         }
-        installRuleset = defaction(rulesetURI, rid) {
+        installRuleset = defaction(eci, rulesetURI, rid) {
             event:send( {
                 "eci": eci,
                 "eid": "install-ruleset-"+rid,
@@ -50,12 +51,14 @@ ruleset manage_sensors {
     rule new_sensor {
         select when sensor new_sensor
         pre {
-            sensor_id = event:attrs{"sensor_id"}
+            name = event:attrs{"name"}
+            alert_number = event:attrs{"alert_number"}
         }
-        if sensors{sensor_id} then send_directive("Error", "A sensor with name '"+sensor_id+"' already exists.")
+        if sensors{name} then send_directive("Error", "A sensor with name '"+name+"' already exists.")
         fired {
             raise wrangler event "new_child_request" attributes {
-                "name": sensor_id,
+                "name": name,
+                "alert_number": alert_number,
                 "backgroundColor": "#ff69b4"
             }
         }
@@ -63,32 +66,32 @@ ruleset manage_sensors {
 
     rule install_temperature_store {
         select when wrangler new_child_created
-        installRuleset(event:attrs{"eci"}, "temperature_store")
+        installRuleset(event:attrs{"eci"}, github_path+"Lab4/temperature_store.krl", "temperature_store")
     }
     rule install_wovyn_base {
         select when wrangler new_child_created
-        installRuleset(event:attrs{"eci"}, "wovyn_base")
+        installRuleset(event:attrs{"eci"}, github_path+"Lab3/wovyn_base.krl", "wovyn_base")
     }
     rule install_sensor_profile {
         select when wrangler new_child_created
-        installRuleset(event:attrs{"eci"}, "sensor_profile")
+        installRuleset(event:attrs{"eci"}, github_path+"Lab5/sensor_profile.krl", "sensor_profile")
     }
     rule install_sensor_emulator {
         select when wrangler new_child_created
-        installRuleset(event:attrs{"eci"}, "io.picolabs.wovyn.emitter")
+        installRuleset(event:attrs{"eci"}, "https://raw.githubusercontent.com/windley/temperature-network/main/io.picolabs.wovyn.emitter.krl", "io.picolabs.wovyn.emitter")
     }
 
     rule store_sensor {
         select when wrangler new_child_created
         pre {
             sensor_eci = event:attrs{"eci"}
-            sensor_id = event:attrs{"sensor_id"}
+            name  = event:attrs{"name"}
             alert_number = event:attrs{"alert_number"}
         }
         fired {
-          ent:sensors{sensor_id} := sensor_eci
+          ent:sensors{name} := sensor_eci
           raise sensor event "profile_updated" attributes {
-            "name":sensor_id,
+            "name":name,
             "alert_number":alert_number,
             "threshold":threshold_default
           }
@@ -98,13 +101,13 @@ ruleset manage_sensors {
     rule delete_sensor {
         select when sensor unneeded_sensor
         pre {
-            sensor_id = event:attrs{"sensor_id"}
+            name = event:attrs{"name"}
         }
-        if ent:sensors >< sensor_id then noop()
+        if ent:sensors >< name then noop()
         fired {
             raise wrangler event "child_deletion_request"
-                attributes {"eci": ent:sensors{sensor_id} };
-            clear ent:sensors{sensor_id}
+                attributes {"eci": ent:sensors{name} };
+            clear ent:sensors{name}
         }
     }
 }
