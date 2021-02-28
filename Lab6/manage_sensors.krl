@@ -4,6 +4,7 @@ ruleset manage_sensors {
         shares __testing
         use module io.picolabs.wrangler alias wrangler
     }
+    
     global {
         __testing = {
             "queries": [
