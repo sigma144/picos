@@ -39,7 +39,7 @@ ruleset manage_sensors {
 
     
     rule intialization {
-        select when wrangler ruleset_added where event:attr("rids") >< ctx:rid
+        select when wrangler ruleset_added where event:attrs{"rids"} >< ctx:rid
         if ent:owners.isnull() then noop()
         fired {
             ent:sensors := {}
@@ -49,7 +49,7 @@ ruleset manage_sensors {
     rule new_sensor {
         select when sensor new_sensor
         pre {
-            sensor_id = event:attr("sensor_id")
+            sensor_id = event:attrs{"sensor_id"}
         }
         if sensors{sensor_id} then send_directive("Error", "A sensor with name '"+sensor_id+"' already exists.")
         fired {
