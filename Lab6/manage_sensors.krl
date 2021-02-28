@@ -4,7 +4,7 @@ ruleset manage_sensors {
         shares __testing
         use module io.picolabs.wrangler alias wrangler
     }
-    
+
     global {
         __testing = {
             "queries": [
@@ -55,7 +55,7 @@ ruleset manage_sensors {
             alert_number = event:attrs{"alert_number"}
         }
         if sensors{name} then send_directive("Error", "A sensor with name '"+name+"' already exists.")
-        fired {
+        notfired {
             raise wrangler event "new_child_request" attributes {
                 "name": name,
                 "alert_number": alert_number,
