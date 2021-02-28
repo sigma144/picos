@@ -25,7 +25,7 @@ ruleset manage_sensors {
                 wrangler:picoQuery(eci,"temperature_store","temperatures",{})
             })
             //temp_array = temp_map.values().reduce(function(a,b){a + b})
-            temp_map
+            temp_map.values()
         }
         installRuleset = defaction(eci, rulesetURI) {
             event:send({
