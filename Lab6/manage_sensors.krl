@@ -1,13 +1,14 @@
 ruleset manage_sensors {
     meta {
         name "Temperature Store"
-        shares __testing
+        shares __testing, sensors, temps
         use module io.picolabs.wrangler alias wrangler
     }
 
     global {
         __testing = {
             "queries": [
+                {"name": "sensors"},
                 {"name": "temps"}
             ],
             "events": [
