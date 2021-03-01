@@ -65,23 +65,6 @@ ruleset manage_sensors {
         }
     }
 
-    rule store_sensor {
-        select when wrangler new_child_created
-        pre {
-            sensor_eci = event:attrs{"eci"}
-            name  = event:attrs{"name"}
-            alert_number = event:attrs{"alert_number"}
-        }
-        fired {
-          ent:sensors{name} := sensor_eci
-          raise sensor event "profile_updated" attributes {
-            "name":name,
-            "alert_number":alert_number,
-            "threshold":threshold_default
-          }
-        }
-    }
-
     rule install_sensor_profile {
         select when wrangler new_child_created
         installRuleset(event:attrs{"eci"}, github_path+"Lab5/sensor_profile.krl")
@@ -101,6 +84,23 @@ ruleset manage_sensors {
     rule install_sensor_emulator {
         select when wrangler new_child_created
         installRuleset(event:attrs{"eci"}, "https://raw.githubusercontent.com/windley/temperature-network/main/io.picolabs.wovyn.emitter.krl")
+    }
+
+    rule store_sensor {
+        select when wrangler new_child_created
+        pre {
+            sensor_eci = event:attrs{"eci"}
+            name  = event:attrs{"name"}
+            alert_number = event:attrs{"alert_number"}
+        }
+        fired {
+          ent:sensors{name} := sensor_eci
+          raise sensor event "profile_updated" attributes {
+            "name":name,
+            "alert_number":alert_number,
+            "threshold":threshold_default
+          }
+        }
     }
 
     rule delete_sensor {
