@@ -13,8 +13,8 @@ ruleset temperature_store {
         ], "events": [
             {"domain": "sensor", "name": "reading_reset"},
         ] }
-        temperatures = function(obj) { ent:temps }
-        threshold_violations = function(obj) { ent:violations }
+        temperatures = function(obj) { ent:temps.defaultsTo({}) }
+        threshold_violations = function(obj) { ent:violations.defaultsTo({}) }
         inrange_temperatures = function(obj) {
             ent:temps.filter(function(v,k){ent:violations{k} == null})
         }
@@ -27,7 +27,7 @@ ruleset temperature_store {
             time = event:attrs{"timestamp"}
         }
         always{
-            ent:temps := ent:temps.defaultsTo({}, "initialize temps");
+            ent:temps := ent:temps.defaultsTo({});
             ent:temps{time} := temperature
         }
     }
@@ -39,7 +39,7 @@ ruleset temperature_store {
             time = event:attrs{"timestamp"}
         }
         always{
-            ent:violations := ent:violations.defaultsTo({}, "initialize violations");
+            ent:violations := ent:violations.defaultsTo({});
             ent:violations{time} := temperature
         }
     }
@@ -47,14 +47,6 @@ ruleset temperature_store {
     rule clear_temperatures {
         select when sensor reading_reset
         always{
-            ent:temps := {}
-            ent:violations := {}
-        }
-    }
-
-    rule intialization {
-        select when wrangler ruleset_added where event:attrs{"rids"} >< ctx:rid
-        always {
             ent:temps := {}
             ent:violations := {}
         }
