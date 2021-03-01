@@ -65,23 +65,6 @@ ruleset manage_sensors {
         }
     }
 
-    rule install_sensor_profile {
-        select when wrangler new_child_created
-        installRuleset(event:attrs{"eci"}, github_path+"Lab5/sensor_profile.krl")
-    } 
-    rule install_temperature_store {
-        select when wrangler new_child_created
-        installRuleset(event:attrs{"eci"}, github_path+"Lab4/temperature_store.krl")
-    }
-    rule install_wovyn_base {
-        select when wrangler new_child_created
-        installRuleset(event:attrs{"eci"}, github_path+"Lab3/wovyn_base.krl")
-    }
-    rule install_sensor_emulator {
-        select when wrangler new_child_created
-        installRuleset(event:attrs{"eci"}, "https://raw.githubusercontent.com/windley/temperature-network/main/io.picolabs.wovyn.emitter.krl")
-    }
-
     rule store_sensor {
         select when wrangler new_child_created
         pre {
@@ -97,6 +80,27 @@ ruleset manage_sensors {
             "threshold":threshold_default
           }
         }
+    }
+
+    rule install_sensor_profile {
+        select when wrangler new_child_created
+        installRuleset(event:attrs{"eci"}, github_path+"Lab5/sensor_profile.krl")
+    } 
+    rule install_temperature_store {
+        select when wrangler new_child_created
+        installRuleset(event:attrs{"eci"}, github_path+"Lab4/temperature_store.krl")
+    }
+    rule install_wovyn_base {
+        select when wrangler new_child_created
+        installRuleset(event:attrs{"eci"}, github_path+"Lab3/wovyn_base.krl")
+    }
+    rule install_twilio_api {
+        select when wrangler new_child_created
+        installRuleset(event:attrs{"eci"}, github_path+"Lab2/twilio_api.krl")
+    }
+    rule install_sensor_emulator {
+        select when wrangler new_child_created
+        installRuleset(event:attrs{"eci"}, "https://raw.githubusercontent.com/windley/temperature-network/main/io.picolabs.wovyn.emitter.krl")
     }
 
     rule delete_sensor {
