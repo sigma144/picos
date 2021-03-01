@@ -93,13 +93,18 @@ ruleset manage_sensors {
             name  = event:attrs{"name"}
             alert_number = event:attrs{"alert_number"}
         }
-        fired {
+        event:send({
+            "eci": sensor_eci,
+            "eid": "profile-update-"+name,
+            "domain": "sensor", "type": "profile_updated",
+            "attrs": {
+                "name":name,
+                "alert_number":alert_number,
+                "threshold":threshold_default
+                }
+            })
+        always {
           ent:sensors{name} := sensor_eci
-          raise sensor event "profile_updated" attributes {
-            "name":name,
-            "alert_number":alert_number,
-            "threshold":threshold_default
-          }
         }
     }
 
