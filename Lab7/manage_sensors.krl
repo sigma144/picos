@@ -23,10 +23,12 @@ ruleset manage_sensors {
         }
         temps = function() {
             temp_map = ent:sensors.map(function(eci,name) {
-                //wrangler:picoQuery(eci{"eci"},"temperature_store","temperatures",{})
-                wrangler:picoQuery(eci{"wellKnown_eci"},"temperature_store","temperatures",{})
+                peerSubs = subscription:established("Id", eci{"wellKnown_eci"})
+                sub = peerSubs.head()
+                peerChannel = sub{"Tx"}
+                peerHost = (sub{"Tx_host"} || meta:host)
+                wrangler:skyQuery(peerChannel, "temperature_store","temperatures",{}, peerHost)
             })
-            //temp_array = temp_map.values()
             temp_map
         }
         installRuleset = defaction(name, eci, rulesetURI) {
