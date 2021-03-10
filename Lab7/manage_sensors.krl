@@ -81,7 +81,7 @@ ruleset manage_sensors {
     }
     rule install_wovyn_base {
         select when wrangler new_child_created
-        installRuleset(event:attrs{"name"}, event:attrs{"eci"}, github_path+"Lab3/wovyn_base.krl")
+        installRuleset(event:attrs{"name"}, event:attrs{"eci"}, github_path+"Lab7/wovyn_base.krl")
     }
     rule install_twilio_api {
         select when wrangler new_child_created
