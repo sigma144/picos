@@ -3,14 +3,15 @@ ruleset manage_sensors {
         name "Temperature Store"
         use module io.picolabs.wrangler alias wrangler
         use module io.picolabs.subscription alias subs
-        shares __testing, sensors, temps
+        shares __testing, sensors, temps, testSubs
     }
 
     global {
         __testing = {
             "queries": [
                 {"name": "sensors"},
-                {"name": "temps"}
+                {"name": "temps"},
+                {"name": "testSubs"}
             ],
             "events": [
                 {"domain": "sensor", "name": "new_sensor", "attrs":["name", "alert_number"]},
@@ -21,6 +22,12 @@ ruleset manage_sensors {
         github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
         sensors = function() {
             ent:sensors
+        }
+        testSubs = function() {
+            temp_map = ent:sensors.map(function(eci,name) {
+                subs:established("Id", eci{"wellKnown_eci"})
+            })
+            temp_map
         }
         temps = function() {
             temp_map = ent:sensors.map(function(eci,name) {
