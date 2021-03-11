@@ -51,7 +51,6 @@ ruleset manage_sensors {
         if ent:sensors.isnull() then noop()
         fired {
             ent:sensors := {}
-            ent:subscriptions := {}
             ent:wellKnown_eci := subs:wellKnown_Rx(){"id"}
         }
     }

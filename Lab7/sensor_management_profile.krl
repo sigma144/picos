@@ -3,7 +3,8 @@ ruleset sensor_management_profile {
         name "Temperature Store"
         shares __testing, profile_info
         provides profile_info
-        use module twilio_api alias twilio with
+        use module twilio_api alias twilio
+        with
             sid = meta:rulesetConfig{"sid"}
             authToken = meta:rulesetConfig{"auth_token"}
             from_number = meta:rulesetConfig{"phone_number"}
