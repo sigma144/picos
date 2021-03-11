@@ -115,13 +115,13 @@ ruleset wovyn_base {
       their_role = event:attrs{"Tx_role"}
     }
     if my_role=="manager" && their_role=="temperature_sensor" then noop()
-    fired {
+    always {
       raise wrangler event "pending_subscription_approval"
         attributes event:attrs
       ent:subscriptionTx := event:attrs{"Tx"}
-    } else {
-      raise wrangler event "inbound_rejection"
-        attributes event:attrs
-    }
+    } //else {
+      //raise wrangler event "inbound_rejection"
+        //attributes event:attrs
+    //}
   }
 }
