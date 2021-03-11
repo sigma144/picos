@@ -40,7 +40,7 @@ ruleset manage_sensors {
                 "attrs": {
                     "url": rulesetURI,
                     "name": name,
-                    "wellKnown_eci":ent:wellKnown_eci
+                    "wellKnown_eci":subs:wellKnown_Rx(){"id"}
                 }
             })
         }
@@ -50,9 +50,8 @@ ruleset manage_sensors {
     
     rule intialization {
         select when wrangler ruleset_added where event:attrs{"rids"} >< meta:rid
-        //if ent:sensors.isnull() then noop()
         always {
-            ent:sensors := {"test": "test"}
+            ent:sensors := {}
             ent:wellKnown_eci := subs:wellKnown_Rx(){"id"}
         }
     }
@@ -69,7 +68,7 @@ ruleset manage_sensors {
                 "name": name,
                 "alert_number": alert_number,
                 "backgroundColor": "#ff69b4",
-                "wellKnown_eci":ent:wellKnown_eci
+                "wellKnown_eci":subs:wellKnown_Rx(){"id"}
             }
         }
     }
@@ -123,7 +122,7 @@ ruleset manage_sensors {
         "domain": "sensor", "type": "request_channel",
         "attrs": {
             "name": name,
-            "wellKnown_eci": ent:wellKnown_eci
+            "wellKnown_eci": subs:wellKnown_Rx(){"id"}
         }
         })
         always {
@@ -152,7 +151,7 @@ ruleset manage_sensors {
         event:send({"eci":event:attrs{"wellKnown_eci"},
           "domain":"wrangler", "name":"subscription",
           "attrs": {
-            "wellKnown_Tx":ent:wellKnown_eci,
+            "wellKnown_Tx":subs:wellKnown_Rx(){"id"},
             "Rx_role":"manager", "Tx_role":"temperature_sensor",
             "name":event:attrs{"name"}+"-subscription", "channel_type":"subscription"
           }
