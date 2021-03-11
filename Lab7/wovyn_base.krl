@@ -76,6 +76,7 @@ ruleset wovyn_base {
       wellKnown_eci re#(.+)#
       setting(name,wellKnown_eci)
       where event:attrs{"rids"} >< meta:rid
+    send_directive("Initialization", {"name":name, "wellKnown_eci":wellKnown_eci})
     always {
       raise sensor event "request_channel" attributes {
         "name": name,

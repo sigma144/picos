@@ -135,6 +135,7 @@ ruleset manage_sensors {
           name re#(.+)#
           wellKnown_eci re#(.+)#
           setting(name,wellKnown_eci)
+        send_directive("Accept well known", {"name": name, "wellKnown":wellKnown_eci})
         fired {
           ent:sensors{[name,"wellKnown_eci"]} := wellKnown_eci
           raise sensor event "make_subscription" attributes {
