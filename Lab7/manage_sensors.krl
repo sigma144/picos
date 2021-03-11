@@ -115,9 +115,10 @@ ruleset manage_sensors {
 
     rule introduce_pico {
         select when sensor introduce_pico
-            name re#(.+)#
-            eci re#(.+)#
-        setting(name,eci)
+        pre {
+            name = event:attrs{"name"}
+            eci = event:attrs{"eci"}
+        }
         event:send({"eci":eci,
         "domain": "sensor", "type": "request_channel",
         "attrs": {
@@ -132,9 +133,10 @@ ruleset manage_sensors {
 
     rule accept_wellKnown {
         select when sensor identify
-          name re#(.+)#
-          wellKnown_eci re#(.+)#
-          setting(name,wellKnown_eci)
+        pre {
+            name = event:attrs{"name"}
+            wellKnown_eci = event:attrs{"wellKnown_eci"}
+        }
         send_directive("Accept well known", {"name": name, "wellKnown":wellKnown_eci})
         fired {
           ent:sensors{[name,"wellKnown_eci"]} := wellKnown_eci
