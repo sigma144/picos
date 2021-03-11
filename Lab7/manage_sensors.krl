@@ -15,6 +15,7 @@ ruleset manage_sensors {
             "events": [
                 {"domain": "sensor", "name": "new_sensor", "attrs":["name", "alert_number"]},
                 {"domain": "sensor", "name": "unneeded_sensor", "attrs":["name"]},
+                {"domain": "sensor", "name": "introduce_pico", "attrs":["name", "eci"]},
             ]
         }
         github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
