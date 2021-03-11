@@ -16,7 +16,7 @@ ruleset sensor_management_profile {
             ],
             "events": [
                 {"domain": "sensor", "name": "profile_updated",
-                "attrs":["alert_number", "threshold"]},
+                "attrs":["alert_number"]},
                 {"domain": "sensor", "name": "profile_updated"}
             ]
         }
@@ -30,16 +30,13 @@ ruleset sensor_management_profile {
     rule update_profile {
         select when sensor profile_updated
         pre {
-            threshold = event:attrs{"threshold"}
             alert_number = event:attrs{"alert_number"}
           }
           send_directive("Update Profile", {
             "alert_number":alert_number,
-            "threshold":threshold
           })
           always {
             ent:profile_alert_number := alert_number
-            ent:profile_threshold := threshold
           }
     }
 
