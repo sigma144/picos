@@ -89,12 +89,14 @@ ruleset wovyn_base {
 
   rule identify_subscription_channel {
     select when sensor request_channel
+    /*
     pre {
       name = event:attrs{"name"}
       parent_wellKnown_eci = event:attrs{"wellKnown_eci"}
-      wellKnown_eci = subs:wellKnown_Rx(){"id"}
-      parent_eci = wrangler:parent_eci()
+      //wellKnown_eci = subs:wellKnown_Rx(){"id"}
+      //parent_eci = wrangler:parent_eci()
     }
+    /*
     event:send({"eci":parent_eci,
       "domain": "sensor", "type": "identify",
       "attrs": {
@@ -105,23 +107,26 @@ ruleset wovyn_base {
     always {
       ent:name := name
       ent:parent_wellKnown_eci := parent_wellKnown_eci
+    }*/
+    if ent:eci.isnull() then
+      wrangler:createChannel(tags,eventPolicy,queryPolicy) setting(channel)
+    fired {
+      ent:name := event:attrs{"name"}
+      ent:parent_wellKnown_eci := event:attrs{"wellKnown_eci"}
+      ent:eci := channel{"id"}
+      raise sensor event "make_subscription"
     }
   }
 
-  rule auto_accept {
-    select when wrangler inbound_pending_subscription_added
-    pre {
-      my_role = event:attrs{"Rx_role"}
-      their_role = event:attrs{"Tx_role"}
-    }
-    if my_role=="manager" && their_role=="temperature_sensor" then noop()
-    always {
-      raise wrangler event "pending_subscription_approval"
-        attributes event:attrs
-      ent:subscriptionTx := event:attrs{"Tx"}
-    } //else {
-      //raise wrangler event "inbound_rejection"
-        //attributes event:attrs
-    //}
+  rule make_subscription {
+    select when sensor make_subscription
+    event:send({"eci":ent:parent_wellKnown_eci,
+      "domain":"wrangler", "name":"subscription",
+      "attrs": {
+        "wellKnown_Tx":subs:wellKnown_Rx(){"id"},
+        "Rx_role":"manager", "Tx_role":"temperature_sensor",
+        "name":event:attrs{"name"}+"-subscription", "channel_type":"subscription"
+      }
+    })
   }
 }

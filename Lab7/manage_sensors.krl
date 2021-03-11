@@ -153,16 +153,21 @@ ruleset manage_sensors {
         }
     }
 
-    rule make_subscription {
-        select when sensor make_subscription
-        event:send({"eci":subs:wellKnown_Rx(){"id"},
-          "domain":"wrangler", "name":"subscription",
-          "attrs": {
-            "wellKnown_Tx":event:attrs{"wellKnown_eci"},
-            "Rx_role":"manager", "Tx_role":"temperature_sensor",
-            "name":event:attrs{"name"}+"-subscription", "channel_type":"subscription"
-          }
-        })
+    rule auto_accept {
+        select when wrangler inbound_pending_subscription_added
+        pre {
+          my_role = event:attrs{"Rx_role"}
+          their_role = event:attrs{"Tx_role"}
+        }
+        if my_role=="manager" && their_role=="temperature_sensor" then noop()
+        fired {
+          raise wrangler event "pending_subscription_approval"
+            attributes event:attrs
+          ent:subscriptionTx := event:attrs{"Tx"}
+        } else {
+          raise wrangler event "inbound_rejection"
+            attributes event:attrs
+        }
       }
 
     rule delete_sensor {
