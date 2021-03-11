@@ -3,6 +3,7 @@ ruleset wovyn_base {
     name "Wovyn Base"
     use module sensor_profile alias profile
     use module io.picolabs.subscription alias subs
+    use module io.picolabs.wrangler alias wrangler
     shares __testing
   }
    
