@@ -49,7 +49,7 @@ ruleset manage_sensors {
 
     
     rule intialization {
-        select when wrangler ruleset_added where event:attrs{"rids"} >< ctx:rid
+        select when wrangler ruleset_added where event:attrs{"rids"} >< meta:rid
         //if ent:sensors.isnull() then noop()
         always {
             ent:sensors := {"test": "test"}
