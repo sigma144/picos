@@ -72,11 +72,12 @@ ruleset wovyn_base {
 
   rule pico_ruleset_added {
     select when wrangler ruleset_installed
-      name re#(.+)#
-      wellKnown_eci re#(.+)#
-      setting(name,wellKnown_eci)
       where event:attrs{"rids"} >< meta:rid
-    send_directive("Initialization", {"name":name, "wellKnown_eci":wellKnown_eci})
+    pre {
+        name = event:attrs{"name"}
+        wellKnown_eci = event:attrs{"wellKnown_eci"}
+    }
+    send_directive("Initialization", {"name":name, "wellKnown_eci":wellKnown_eci, "attrs":event:attrs})
     always {
       raise sensor event "request_channel" attributes {
         "name": name,
