@@ -39,7 +39,8 @@ ruleset manage_sensors {
                 "domain": "wrangler", "type": "install_ruleset_request",
                 "attrs": {
                     "url": rulesetURI,
-                    "name": name
+                    "name": name,
+                    "wellKnown_eci":ent:wellKnown_eci
                 }
             })
         }
