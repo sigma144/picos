@@ -52,7 +52,7 @@ ruleset manage_sensors {
         select when wrangler ruleset_added where event:attrs{"rids"} >< meta:rid
         if ent:sensors.isnull() then noop()
         fired {
-            ent:sensors := {}
+            ent:sensors := {"test": "test"}
             ent:wellKnown_eci := subs:wellKnown_Rx(){"id"}
         }
     }
