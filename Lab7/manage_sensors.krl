@@ -155,10 +155,10 @@ ruleset manage_sensors {
 
     rule make_subscription {
         select when sensor make_subscription
-        event:send({"eci":event:attrs{"wellKnown_eci"},
+        event:send({"eci":subs:wellKnown_Rx(){"id"},
           "domain":"wrangler", "name":"subscription",
           "attrs": {
-            "wellKnown_Tx":subs:wellKnown_Rx(){"id"},
+            "wellKnown_Tx":event:attrs{"wellKnown_eci"},
             "Rx_role":"manager", "Tx_role":"temperature_sensor",
             "name":event:attrs{"name"}+"-subscription", "channel_type":"subscription"
           }
