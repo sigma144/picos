@@ -1,9 +1,9 @@
 ruleset manage_sensors {
     meta {
         name "Temperature Store"
-        shares __testing, sensors, temps
         use module io.picolabs.wrangler alias wrangler
         use module io.picolabs.subscription alias subs
+        shares __testing, sensors, temps
     }
 
     global {
@@ -68,14 +68,14 @@ ruleset manage_sensors {
                 "name": name,
                 "alert_number": alert_number,
                 "backgroundColor": "#ff69b4",
-                "wellKnown_Rx":ent:wellKnown_eci
+                "wellKnown_eci":ent:wellKnown_eci
             }
         }
     }
 
     rule install_sensor_profile {
         select when wrangler new_child_created
-        installRuleset(event:attrs{"name"}, event:attrs{"eci"}, github_path+"Lab5/sensor_profile.krl")
+        installRuleset(event:attrs{"name"}, event:attrs{"eci"}, github_path+"Lab7/sensor_profile.krl")
     } 
     rule install_temperature_store {
         select when wrangler new_child_created
@@ -84,10 +84,6 @@ ruleset manage_sensors {
     rule install_wovyn_base {
         select when wrangler new_child_created
         installRuleset(event:attrs{"name"}, event:attrs{"eci"}, github_path+"Lab7/wovyn_base.krl")
-    }
-    rule install_twilio_api {
-        select when wrangler new_child_created
-        installRuleset(event:attrs{"name"}, event:attrs{"eci"}, github_path+"Lab2/twilio_api.krl")
     }
     rule install_sensor_emulator {
         select when wrangler new_child_created
@@ -113,6 +109,23 @@ ruleset manage_sensors {
             })
         always {
           ent:sensors{[name,"eci"]} := sensor_eci
+        }
+    }
+
+    rule introduce_pico {
+        select when sensor introduce_pico
+            name re#(.+)#
+            eci re#(.+)#
+        setting(name,eci)
+        event:send({"eci":eci,
+        "domain": "sensor", "type": "request_channel",
+        "attrs": {
+            "name": name,
+            "wellKnown_eci": ent:wellKnown_eci
+        }
+        })
+        always {
+            ent:sensors{[name,"eci"]} := event:attrs{"eci"}
         }
     }
 

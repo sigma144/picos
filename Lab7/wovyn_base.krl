@@ -55,32 +55,43 @@ ruleset wovyn_base {
   rule threshold_notification {
     select when wovyn threshold_violation
     pre {
-      temperature = event:attrs{"temperature"}.klog("Exceeded threshold")
+      temperature = event:attrs{"temperature"}
       threshold = profile:profile_info(){"threshold"}
       time = event:attrs{"timestamp"}
-      alert_number = profile:profile_info(){"alert_number"}
     }
-    send_directive("Threshold exceeded! Sending notification", {
-      "phone-no":alert_number,
-      "timestamp":time
-    })
-    fired {
-      raise test event "send" attributes {
-        "to": alert_number,
+    event:send({
+      "eci":ent:parent_wellKnown_eci,
+      "eid":"threshold_violation",                  
+      "domain":"sensor",
+      "type":"threshold_violation",
+      "attrs": {
         "message": <<"Hi Temp Alert at #{time}: Temperature #{temperature}F exceeds threshold of #{threshold}F>>
       }
-      if (alert_number);
-    }
+    })
   }
 
   rule pico_ruleset_added {
     select when wrangler ruleset_installed
+      name re#(.+)#
+      wellKnown_eci re#(.+)#
+      setting(name,wellKnown_eci)
       where event:attrs{"rids"} >< meta:rid
+    always {
+      raise sensor event "request_channel" attributes {
+        "name": name,
+        "wellKnown_eci": wellKnown_eci
+      }
+    }
+  }
+
+  rule identify_subscription_channel {
+    select when sensor request_channel
+      name re#(.+)#
+      wellKnown_eci re#(.+)#
+      setting(name,parent_wellKnown_eci)
     pre {
-      name = event:attrs{"name"}
       wellKnown_eci = subs:wellKnown_Rx(){"id"}
       parent_eci = wrangler:parent_eci()
-      parent_wellKnown_eci = event:attrs{"wellKnown_eci"}
     }
     event:send({"eci":parent_eci,
       "domain": "sensor", "type": "identify",
