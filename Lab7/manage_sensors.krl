@@ -75,7 +75,7 @@ ruleset manage_sensors {
                 "name": name,
                 "alert_number": alert_number,
                 "backgroundColor": "#ff69b4",
-                "wellKnown_eci":subs:wellKnown_Rx(){"id"}
+                "wellKnown_eci":subs:wellKnown_Tx(){"id"}
             }
         }
     }
