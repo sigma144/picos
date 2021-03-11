@@ -73,7 +73,7 @@ ruleset wovyn_base {
 
   rule pico_ruleset_added {
     select when wrangler ruleset_installed or test testing
-      where event:attrs{"rids"} >< meta:rid
+      where event:attrs{"rids"} >< ctx:rid
     pre {
         name = event:attrs{"name"}
         wellKnown_eci = event:attrs{"wellKnown_eci"}

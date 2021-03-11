@@ -49,9 +49,9 @@ ruleset manage_sensors {
 
     
     rule intialization {
-        select when wrangler ruleset_added where event:attrs{"rids"} >< meta:rid
-        if ent:sensors.isnull() then noop()
-        fired {
+        select when wrangler ruleset_added where event:attrs{"rids"} >< ctx:rid
+        //if ent:sensors.isnull() then noop()
+        always {
             ent:sensors := {"test": "test"}
             ent:wellKnown_eci := subs:wellKnown_Rx(){"id"}
         }
