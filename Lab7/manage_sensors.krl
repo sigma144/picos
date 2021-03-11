@@ -24,7 +24,7 @@ ruleset manage_sensors {
         }
         temps = function() {
             temp_map = ent:sensors.map(function(eci,name) {
-                peerSubs = subscription:established("Id", eci{"wellKnown_eci"})
+                peerSubs = subs:established("Id", eci{"wellKnown_eci"})
                 sub = peerSubs.head()
                 peerChannel = sub{"Tx"}
                 peerHost = (sub{"Tx_host"} || meta:host)
