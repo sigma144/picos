@@ -19,7 +19,8 @@ ruleset manage_sensors {
                 {"domain": "sensor", "name": "introduce_pico", "attrs":["name", "eci"]},
             ]
         }
-        github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
+        //github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
+        github_path = "file:///mnt/c/Users/Brian/Desktop/CS 462/picos/"
         sensors = function() {
             ent:sensors
         }
@@ -74,9 +75,23 @@ ruleset manage_sensors {
             raise wrangler event "new_child_request" attributes {
                 "name": name,
                 "alert_number": alert_number,
-                "backgroundColor": "#ff69b4",
-                "wellKnown_eci":subs:wellKnown_Tx(){"id"}
+                "backgroundColor": "#ff69b4"
             }
+        }
+    }
+
+    rule delete_sensor {
+        select when sensor unneeded_sensor
+        pre {
+            name = event:attrs{"name"}
+        }
+        if ent:sensors >< name then noop()
+        fired {
+            raise wrangler event "subscription_cancellation"
+                attributes {"Id": ent:sensors{[name, "subs_eci"]}}
+            raise wrangler event "child_deletion_request"
+                attributes {"eci": ent:sensors{[name, "eci"]} };
+            clear ent:sensors{name}
         }
     }
 
@@ -117,71 +132,31 @@ ruleset manage_sensors {
         always {
           ent:sensors{[name,"eci"]} := sensor_eci
         }
+        
     }
 
-    rule introduce_pico {
-        select when sensor introduce_pico
-        pre {
-            name = event:attrs{"name"}
-            eci = event:attrs{"eci"}
-        }
-        event:send({"eci":eci,
-        "domain": "sensor", "type": "request_channel",
-        "attrs": {
-            "name": name,
-            "wellKnown_eci": subs:wellKnown_Rx(){"id"}
-        }
+    rule request_subsciption {
+        select when wrangler new_child_created
+        event:send({"eci":event:attrs{"eci"},
+            "domain":"wovyn", "name":"request_subscription",
+            "attrs": {
+                "manager_Rx":subs:wellKnown_Rx(){"id"},
+                "Rx_role":"manager", "Tx_role":"temperature_sensor",
+                "name":event:attrs{"name"}
+            }
         })
-        always {
-            ent:sensors{[name,"eci"]} := event:attrs{"eci"}
-        }
-    }
-
-    rule accept_wellKnown {
-        select when sensor identify
-        pre {
-            name = event:attrs{"name"}
-            wellKnown_eci = event:attrs{"wellKnown_eci"}
-        }
-        send_directive("Accept well known", {"name": name, "wellKnown":wellKnown_eci})
-        fired {
-          ent:sensors{[name,"wellKnown_eci"]} := wellKnown_eci
-          raise sensor event "make_subscription" attributes {
-            "name":name,
-            "wellKnown_eci":wellKnown_eci
-          }
-        }
     }
 
     rule auto_accept {
         select when wrangler inbound_pending_subscription_added
-        pre {
-          my_role = event:attrs{"Rx_role"}
-          their_role = event:attrs{"Tx_role"}
-        }
-        if my_role=="manager" && their_role=="temperature_sensor" then noop()
+        if event:attrs{"Rx_role"}=="manager" && event:attrs{"Tx_role"}=="temperature_sensor" then noop()
         fired {
-          raise wrangler event "pending_subscription_approval"
-            attributes event:attrs
-          ent:subscriptionTx := event:attrs{"Tx"}
+            raise wrangler event "pending_subscription_approval"
+                attributes event:attrs
+            ent:sensors{[event:attrs{"name"},"subs_eci"]} := event:attrs{"Tx"}
         } else {
-          raise wrangler event "inbound_rejection"
+        raise wrangler event "inbound_rejection"
             attributes event:attrs
-        }
-      }
-
-    rule delete_sensor {
-        select when sensor unneeded_sensor
-        pre {
-            name = event:attrs{"name"}
-        }
-        if ent:sensors >< name then noop()
-        fired {
-            raise wrangler event "subscription_cancellation"
-                attributes {"Id": ent:sensors{[name, "wellKnown_eci"]}}
-            raise wrangler event "child_deletion_request"
-                attributes {"eci": ent:sensors{[name, "eci"]} };
-            clear ent:sensors{name}
         }
     }
 }

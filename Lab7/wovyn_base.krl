@@ -6,14 +6,14 @@ ruleset wovyn_base {
     use module io.picolabs.wrangler alias wrangler
     shares __testing
   }
-   
+
   global {
     __testing = {
       "queries": [
         
       ],
       "events": [
-        {"domain": "test", "name": "testing", "attrs":[]},
+        
       ]
     }
   }
@@ -71,62 +71,14 @@ ruleset wovyn_base {
     })
   }
 
-  rule pico_ruleset_added {
-    select when wrangler ruleset_installed or test testing
-      where event:attrs{"rids"} >< meta:rid
-    pre {
-        name = event:attrs{"name"}
-        wellKnown_eci = event:attrs{"wellKnown_eci"}
-    }
-    send_directive("Initialization", {"name":name, "wellKnown_eci":wellKnown_eci, "attrs":event:attrs})
+  rule create_subscription {
+    select when wovyn request_subscription
     always {
-      raise sensor event "request_channel" attributes {
-        "name": name,
-        "wellKnown_eci": wellKnown_eci
+      raise wrangler event "subscription" attributes {
+        "wellKnown_Tx":event:attrs{"manager_Rx"},
+        "Rx_role":event:attrs{"Tx_role"}, "Tx_role":event:attrs{"Rx_role"},
+        "name":event:attrs{"name"}, "channel_type":"subscription"
       }
     }
-  }
-
-  rule identify_subscription_channel {
-    select when sensor request_channel
-    /*
-    pre {
-      name = event:attrs{"name"}
-      parent_wellKnown_eci = event:attrs{"wellKnown_eci"}
-      //wellKnown_eci = subs:wellKnown_Rx(){"id"}
-      //parent_eci = wrangler:parent_eci()
-    }
-    /*
-    event:send({"eci":parent_eci,
-      "domain": "sensor", "type": "identify",
-      "attrs": {
-        "name": name,
-        "wellKnown_eci": wellKnown_eci
-      }
-    })
-    always {
-      ent:name := name
-      ent:parent_wellKnown_eci := parent_wellKnown_eci
-    }*/
-    if ent:eci.isnull() then
-      wrangler:createChannel(tags,eventPolicy,queryPolicy) setting(channel)
-    fired {
-      ent:name := event:attrs{"name"}
-      ent:parent_wellKnown_eci := event:attrs{"wellKnown_eci"}
-      ent:eci := channel{"id"}
-      raise sensor event "make_subscription"
-    }
-  }
-
-  rule make_subscription {
-    select when sensor make_subscription
-    event:send({"eci":ent:parent_wellKnown_eci,
-      "domain":"wrangler", "name":"subscription",
-      "attrs": {
-        "wellKnown_Tx":subs:wellKnown_Rx(){"id"},
-        "Rx_role":"manager", "Tx_role":"temperature_sensor",
-        "name":event:attrs{"name"}+"-subscription", "channel_type":"subscription"
-      }
-    })
   }
 }
