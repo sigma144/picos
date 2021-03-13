@@ -16,7 +16,7 @@ ruleset manage_sensors {
             "events": [
                 {"domain": "sensor", "name": "new_sensor", "attrs":["name", "alert_number"]},
                 {"domain": "sensor", "name": "unneeded_sensor", "attrs":["name"]},
-                {"domain": "sensor", "name": "introduce_pico", "attrs":["name", "eci"]},
+                {"domain": "sensor", "name": "introduce_sensor", "attrs":["name", "eci"]},
             ]
         }
         //github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
@@ -26,13 +26,13 @@ ruleset manage_sensors {
         }
         testSubs = function() {
             temp_map = ent:sensors.map(function(eci,name) {
-                subs:established("Id", eci{"wellKnown_eci"})
+                subs:established("Id", eci{"subs_id"})
             })
             temp_map
         }
         temps = function() {
             temp_map = ent:sensors.map(function(eci,name) {
-                peerSubs = subs:established("Id", eci{"wellKnown_eci"})
+                peerSubs = subs:established("Id", eci{"subs_id"})
                 sub = peerSubs.head()
                 peerChannel = sub{"Tx"}
                 peerHost = (sub{"Tx_host"} || meta:host)
@@ -54,13 +54,11 @@ ruleset manage_sensors {
         }
         threshold_default = 81
     }
-
     
-    rule intialization {
-        select when wrangler ruleset_added where event:attrs{"rids"} >< meta:rid
+    rule initialization {
+        select when wrangler ruleset_installed where event:attrs{"rids"} >< meta:rid
         always {
             ent:sensors := {}
-            ent:wellKnown_eci := subs:wellKnown_Rx(){"id"}
         }
     }
 
@@ -70,7 +68,7 @@ ruleset manage_sensors {
             name = event:attrs{"name"}
             alert_number = event:attrs{"alert_number"}
         }
-        if sensors{name} then send_directive("Error", "A sensor with name '"+name+"' already exists.")
+        if ent:sensors{name} then send_directive("Error", "A sensor with name '"+name+"' already exists.")
         notfired {
             raise wrangler event "new_child_request" attributes {
                 "name": name,
@@ -88,9 +86,9 @@ ruleset manage_sensors {
         if ent:sensors >< name then noop()
         fired {
             raise wrangler event "subscription_cancellation"
-                attributes {"Id": ent:sensors{[name, "subs_eci"]}}
+                attributes {"Id": ent:sensors{[name, "subs_id"]} } if ent:sensors{[name, "subs_id"]}
             raise wrangler event "child_deletion_request"
-                attributes {"eci": ent:sensors{[name, "eci"]} };
+                attributes {"eci": ent:sensors{[name, "eci"]} } if ent:sensors{[name, "eci"]};
             clear ent:sensors{name}
         }
     }
@@ -109,7 +107,8 @@ ruleset manage_sensors {
     }
     rule install_sensor_emulator {
         select when wrangler new_child_created
-        installRuleset(event:attrs{"name"}, event:attrs{"eci"}, "https://raw.githubusercontent.com/windley/temperature-network/main/io.picolabs.wovyn.emitter.krl")
+        //installRuleset(event:attrs{"name"}, event:attrs{"eci"}, "https://raw.githubusercontent.com/windley/temperature-network/main/io.picolabs.wovyn.emitter.krl")
+        installRuleset(event:attrs{"name"}, event:attrs{"eci"}, "https://raw.githubusercontent.com/windley/temperature-network/de63ef723bbdbf34b641dbc90835b70da7c2e407/io.picolabs.wovyn.emitter.krl")
     }
 
     rule store_sensor {
@@ -136,7 +135,7 @@ ruleset manage_sensors {
     }
 
     rule request_subsciption {
-        select when wrangler new_child_created
+        select when wrangler new_child_created or sensor introduce_sensor
         event:send({"eci":event:attrs{"eci"},
             "domain":"wovyn", "name":"request_subscription",
             "attrs": {
@@ -154,6 +153,7 @@ ruleset manage_sensors {
             raise wrangler event "pending_subscription_approval"
                 attributes event:attrs
             ent:sensors{[event:attrs{"name"},"subs_eci"]} := event:attrs{"Tx"}
+            ent:sensors{[event:attrs{"name"},"subs_id"]} := event:attrs{"Id"}
         } else {
         raise wrangler event "inbound_rejection"
             attributes event:attrs

@@ -17,6 +17,13 @@ ruleset wovyn_base {
       ]
     }
   }
+      
+  rule initialization {
+    select when wrangler ruleset_installed where event:attrs{"rids"} >< meta:rid
+    always {
+        ent:managers := []
+    }
+  }
 
   rule process_heartbeat {
     select when wovyn heartbeat genericThing re#(.+)#
@@ -55,13 +62,14 @@ ruleset wovyn_base {
 
   rule threshold_notification {
     select when wovyn threshold_violation
+    foreach subs:established() setting (sub)
     pre {
       temperature = event:attrs{"temperature"}
       threshold = profile:profile_info(){"threshold"}
       time = event:attrs{"timestamp"}
     }
     event:send({
-      "eci":ent:parent_wellKnown_eci,
+      "eci":sub{"Tx"},
       "eid":"threshold_violation",                  
       "domain":"sensor",
       "type":"threshold_violation",

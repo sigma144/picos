@@ -39,10 +39,10 @@ ruleset sensor_management_profile {
             ent:profile_alert_number := alert_number
           }
     }
-
     
     rule threshold_notification {
         select when sensor threshold_violation
-        twilio:sendTextMessage(ent:profile_alert_number, event:attrs{"message"})
+        if ent:profile_alert_number then
+            twilio:sendTextMessage(ent:profile_alert_number, event:attrs{"message"})
     }
 }
