@@ -19,20 +19,22 @@ ruleset manage_sensors {
                 {"domain": "sensor", "name": "introduce_sensor", "attrs":["name", "eci"]},
             ]
         }
-        //github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
-        github_path = "file:///mnt/c/Users/Brian/Desktop/CS 462/picos/"
+        github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
+        //github_path = "file:///mnt/c/Users/Brian/Desktop/CS 462/picos/"
         sensors = function() {
             ent:sensors
         }
         testSubs = function() {
             temp_map = ent:sensors.map(function(eci,name) {
                 subs:established("Id", eci{"subs_id"})
+                    .filter(function(x){x{"Tx_role"} == "temperature_sensor"})
             })
             temp_map
         }
         temps = function() {
             temp_map = ent:sensors.map(function(eci,name) {
                 peerSubs = subs:established("Id", eci{"subs_id"})
+                    .filter(function(x){x{"Tx_role"} == "temperature_sensor"})
                 sub = peerSubs.head()
                 peerChannel = sub{"Tx"}
                 peerHost = (sub{"Tx_host"} || meta:host)
@@ -52,7 +54,7 @@ ruleset manage_sensors {
                 }
             })
         }
-        threshold_default = 81
+        threshold_default = 78
     }
     
     rule initialization {
