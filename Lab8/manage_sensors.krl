@@ -3,7 +3,7 @@ ruleset manage_sensors {
         name "Temperature Store"
         use module io.picolabs.wrangler alias wrangler
         use module io.picolabs.subscription alias subs
-        shares __testing, sensors, temps, testSubs
+        shares __testing, sensors, temps, testSubs, testReports, recentTemps
     }
 
     global {
@@ -11,17 +11,19 @@ ruleset manage_sensors {
             "queries": [
                 {"name": "sensors"},
                 {"name": "temps"},
-                {"name": "recent_temps"},
+                {"name": "recentTemps"},
+                //{"name": "testReports"}
             ],
             "events": [
                 {"domain": "sensor", "name": "new_sensor", "attrs":["name", "alert_number"]},
                 {"domain": "sensor", "name": "unneeded_sensor", "attrs":["name"]},
                 {"domain": "sensor", "name": "introduce_sensor", "attrs":["name", "eci"]},
+                {"domain": "sensor", "name": "request_report", "attrs":[]},
                 {"domain": "sensor", "name": "reset_reports", "attrs":[]},
             ]
         }
-        github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
-        //github_path = "file:///mnt/c/Users/Brian/Desktop/CS 462/picos/"
+        //github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
+        github_path = "file:///mnt/c/Users/Brian/Desktop/CS 462/picos/"
         sensors = function() {
             ent:sensors
         }
@@ -43,8 +45,11 @@ ruleset manage_sensors {
             })
             temp_map
         }
-        recent_temps = function() {
-            ent:reports.slice(4)
+        recentTemps = function() {
+            ent:recent_reports.length() > 5 => ent:recent_reports.slice(4) | ent:recent_reports
+        }
+        testReports = function() {
+            ent:recent_reports
         }
         installRuleset = defaction(name, eci, rulesetURI) {
             event:send({
@@ -108,7 +113,7 @@ ruleset manage_sensors {
     } 
     rule install_temperature_store {
         select when wrangler new_child_created
-        installRuleset(event:attrs{"name"}, event:attrs{"eci"}, github_path+"Lab4/temperature_store.krl")
+        installRuleset(event:attrs{"name"}, event:attrs{"eci"}, github_path+"Lab8/temperature_store.krl")
     }
     rule install_wovyn_base {
         select when wrangler new_child_created
@@ -116,7 +121,6 @@ ruleset manage_sensors {
     }
     rule install_sensor_emulator {
         select when wrangler new_child_created
-        //installRuleset(event:attrs{"name"}, event:attrs{"eci"}, "https://raw.githubusercontent.com/windley/temperature-network/main/io.picolabs.wovyn.emitter.krl")
         installRuleset(event:attrs{"name"}, event:attrs{"eci"}, "https://raw.githubusercontent.com/windley/temperature-network/de63ef723bbdbf34b641dbc90835b70da7c2e407/io.picolabs.wovyn.emitter.krl")
     }
 
@@ -170,7 +174,7 @@ ruleset manage_sensors {
     }
 
     rule init_temperature_report {
-        select when wovyn temperature_report
+        select when sensor request_report
         always {
             ent:temp_reports{ent:report_id} := {
                 "temperature_sensors":subs:established().length(),
@@ -181,7 +185,7 @@ ruleset manage_sensors {
     }
     
     rule request_temperature_report {
-        select when wovyn request_report
+        select when sensor request_report
         foreach subs:established("Tx_role", "temperature_sensor") setting (sub)
         event:send({
             "eci":sub{"Tx"},
@@ -190,7 +194,7 @@ ruleset manage_sensors {
             "type":"request_report",
             "attrs": {
                 "report_id": ent:report_id,
-                "manager_Rx":subs:wellKnown_Rx(){"id"}
+                "Id": sub{"Id"}
             }
         })
         fired {
@@ -202,11 +206,11 @@ ruleset manage_sensors {
         select when sensor temperature_report
         pre {
             temps = [event:attrs{"report_id"}, "temperatures"]
-            reporting = [event:attrs{"report_id"}, "reporting"]
+            responding = [event:attrs{"report_id"}, "responding"]
         }
         always {
             ent:temp_reports{temps} := ent:temp_reports{temps}.append(event:attrs{"temp"})
-            ent:temp_reports{reporting} := ent:temp_reports{reporting} + 1
+            ent:temp_reports{responding} := ent:temp_reports{responding} + 1
         }
     }
 
@@ -214,11 +218,11 @@ ruleset manage_sensors {
         select when sensor temperature_report
         pre {
             sensors = [event:attrs{"report_id"}, "temperature_sensors"]
-            reporting = [event:attrs{"report_id"}, "reporting"]
+            responding = [event:attrs{"report_id"}, "responding"]
         }
-        if ent:temp_reports{sensors} == ent:temp_reports{reporting} then noop()
+        if ent:temp_reports{sensors} == ent:temp_reports{responding} then noop()
         fired {
-            ent:recent_reports := ent:recent_reports.append(ent:temp_reports{event:attrs{"report_id"}})
+            ent:recent_reports := ent:temp_reports{event:attrs{"report_id"}}.append(ent:recent_reports)
             clear ent:temp_reports{"report_id"}
         }
     }

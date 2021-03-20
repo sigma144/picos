@@ -4,6 +4,7 @@ ruleset temperature_store {
         shares __testing, temperatures, threshold_violations, inrange_temperatures
         provides temperatures, threshold_violations, inrange_temperatures
         use module io.picolabs.wrangler alias wrangler
+        use module io.picolabs.subscription alias subs
     }
     global {
         __testing = { "queries": [
@@ -53,15 +54,15 @@ ruleset temperature_store {
     }
     
     rule report_temps {
-        select when wovyn request_report
-        foreach subs:established("Tx", "manager_Rx") setting (sub)
+        select when sensor request_report
+        foreach subs:established("Id", event:attrs{"Id"}) setting (sub)
         event:send({
             "eci":sub{"Tx"},
             "eid":"temp_report",
             "domain":"sensor",
             "type":"temperature_report",
             "attrs": {
-              "temp": ent:temps[0],
+              "temp": ent:temps{ent:temps.keys()[ent:temps.length() - 1]},
               "report_id": event:attrs{"report_id"}
             }
         })
