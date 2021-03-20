@@ -22,8 +22,8 @@ ruleset manage_sensors {
                 {"domain": "sensor", "name": "reset_reports", "attrs":[]},
             ]
         }
-        //github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
-        github_path = "file:///mnt/c/Users/Brian/Desktop/CS 462/picos/"
+        github_path = "https://raw.githubusercontent.com/sigma144/picos/master/"
+        //github_path = "file:///mnt/c/Users/Brian/Desktop/CS 462/picos/"
         sensors = function() {
             ent:sensors
         }
